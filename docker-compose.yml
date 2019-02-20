@@ -2,20 +2,40 @@ version: '2'
 
 services:
     reverseproxy:
-        image: reverseproxy
+        build:
+            context: .
         ports:
-            - 8080:8080
-            - 8081:8081
+            - 80:80
         restart: always
 
-    nginx:
+    portfolio:
+        build:
+            context: portfolio
+        restart: always
         depends_on:
             - reverseproxy
-        image: nginx:alpine
-        restart: always
 
-    apache:
+    blog:
+        image: wordpress
+        volumes:
+            - ./wordpress/wp_html:/var/www/html
+        restart: always
         depends_on:
             - reverseproxy
-        image: httpd:alpine
-        restart: always
+            - wp_db
+
+    wp_db:
+        image: mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: examplepass
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment:
+            MYSQL_USERNAME: root
+            MYSQL_ROOT_PASSWORD: examplepass
+            PMA_HOST: wp_db
+        ports:
+            - 9090:80
+        depends_on:
+            - wp_db
