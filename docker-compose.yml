@@ -1,4 +1,4 @@
-version: '2'
+version: '3.3'
 
 services:
     reverseproxy:
@@ -20,14 +20,25 @@ services:
         volumes:
             - ./wordpress/wp_html:/var/www/html
         restart: always
+        environment:
+            WORDPRESS_DB_HOST: wp_db:3306
+            WORDPRESS_DB_USER: wordpress
+            WORDPRESS_DB_PASSWORD: wordpress
+            WORDPRESS_DB_NAME: wordpress
         depends_on:
             - reverseproxy
             - wp_db
 
     wp_db:
-        image: mariadb
+        image: mysql:5.7
+        volumes:
+            - ./wp_db:/var/lib/mysql
+        restart: always
         environment:
-            MYSQL_ROOT_PASSWORD: examplepass
+            MYSQL_ROOT_PASSWORD: somewordpress
+            MYSQL_DATABASE: wordpress
+            MYSQL_USER: wordpress
+            MYSQL_PASSWORD: wordpress
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -39,3 +50,6 @@ services:
             - 9090:80
         depends_on:
             - wp_db
+
+volumes:
+    wp_db: {}
