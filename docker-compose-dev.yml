@@ -1,0 +1,55 @@
+version: '3.3'
+
+services:
+    reverseproxy:
+        build:
+            context: .
+        ports:
+            - 80:80
+        restart: always
+
+    portfolio:
+        build:
+            context: portfolio
+        restart: always
+        depends_on:
+            - reverseproxy
+
+    blog:
+        image: wordpress
+        volumes:
+            - ./wordpress/wp_html:/var/www/html
+        restart: always
+        environment:
+            WORDPRESS_DB_HOST: wp_db:3306
+            WORDPRESS_DB_USER: wordpress
+            WORDPRESS_DB_PASSWORD: wordpress
+            WORDPRESS_DB_NAME: wordpress
+        depends_on:
+            - reverseproxy
+            - wp_db
+
+    wp_db:
+        image: mysql:5.7
+        volumes:
+            - ./wp_db:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: somewordpress
+            MYSQL_DATABASE: wordpress
+            MYSQL_USER: wordpress
+            MYSQL_PASSWORD: wordpress
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment:
+            MYSQL_USERNAME: root
+            MYSQL_ROOT_PASSWORD: examplepass
+            PMA_HOST: wp_db
+        ports:
+            - 9090:80
+        depends_on:
+            - wp_db
+
+volumes:
+    wp_db: {}
