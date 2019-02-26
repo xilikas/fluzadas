@@ -2,16 +2,19 @@ version: '3.3'
 
 services:
     reverseproxy:
-        build:
-            context: .
+        image: nginx:alpine
+        volumes:
+            - ./nginx-example.conf:/etc/nginx/nginx.conf
+            - ./certs:/etc/nginx/certs/fluzadas.com
         ports:
             - 443:443
         restart: always
 
     portfolio:
-        build:
-            context: portfolio
+        image: nginx:alpine
         restart: always
+        volumes:
+            - ./portfolio:/usr/share/nginx/html
 
     blog:
         image: wordpress

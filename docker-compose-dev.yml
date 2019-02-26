@@ -2,18 +2,18 @@ version: '3.3'
 
 services:
     reverseproxy:
-        build:
-            context: .
+        image: nginx:alpine
+        volumes:
+            - ./nginx-example.conf:/etc/nginx/nginx.conf
         ports:
             - 80:80
         restart: always
 
     portfolio:
-        build:
-            context: portfolio
+        image: nginx:alpine
         restart: always
-        depends_on:
-            - reverseproxy
+        volumes:
+            - ./portfolio:/usr/share/nginx/html
 
     blog:
         image: wordpress
@@ -26,7 +26,6 @@ services:
             WORDPRESS_DB_PASSWORD: wordpress
             WORDPRESS_DB_NAME: wordpress
         depends_on:
-            - reverseproxy
             - wp_db
 
     wp_db:
