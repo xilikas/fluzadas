@@ -21,10 +21,12 @@ services:
         volumes:
             - ./wordpress/wp_html:/var/www/html
         restart: always
+        env_file:
+            - .env
         environment:
             WORDPRESS_DB_HOST: wp_db:3306
-            WORDPRESS_DB_USER: wordpress
-            WORDPRESS_DB_PASSWORD: wordpress
+            WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+            WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
             WORDPRESS_DB_NAME: wordpress
         depends_on:
             - wp_db
@@ -34,11 +36,13 @@ services:
         volumes:
             - ./wp_db:/var/lib/mysql
         restart: always
+        env_file:
+            - .env
         environment:
             MYSQL_ROOT_PASSWORD: somewordpress
             MYSQL_DATABASE: wordpress
-            MYSQL_USER: wordpress
-            MYSQL_PASSWORD: wordpress
+            MYSQL_USER: ${WORDPRESS_DB_USER}
+            MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
